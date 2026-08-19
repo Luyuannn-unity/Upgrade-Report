@@ -1,0 +1,18 @@
+\chapter{Introduction}
+\label{ch:intro}
+% Target: ~2,500 words
+
+\section{Background}
+\outline{Clinical AI models fail on patients and hospitals they were not trained on. The fix is training on varied data from many sites. Privacy law (GDPR, HIPAA) stops hospitals from pooling patient records. Federated learning (FL) resolves this: each site trains on its own data and shares only model updates. Explain FL in plain words in one paragraph, with a figure.}
+
+\section{Motivation}
+\outline{The open question is not whether FL runs. It is whether FL delivers accuracy close to pooled training, on real separated data, at a cost a clinic can afford. Two applications test this: eye disease imaging (with Moorfields) and blood glucose forecasting in type 1 diabetes. One is images, one is time series. Together they cover the two main data types in clinical FL.}
+
+\section{Research questions}
+\outline{RQ1: What does the published evidence show about FL in ophthalmic imaging, and where are the gaps? RQ2: For glucose forecasting, how much accuracy does FL give up against pooled training, and how well does it transfer to unseen cohorts? RQ3: Can a federation run across real institutions, and what does a new site need to benefit from it? RQ4 (future): Can the gaps found in RQ1 be closed with a real multi-site ophthalmic federation with measured privacy?}
+
+\section{Contributions so far}
+\outline{One paragraph per paper. Paper 1: PRISMA 2020 systematic review of FL in ophthalmic imaging, 90 studies, rule-based risk-of-bias tool. Paper 2: benchmark of six training strategies on four T1D cohorts with three unseen test cohorts, run live across four universities.}
+
+\section{Report organisation}
+\outline{One sentence per chapter.}

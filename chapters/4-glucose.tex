@@ -1,0 +1,21 @@
+\chapter{Federated Glucose Forecasting: Benchmark and Live Deployment}
+\label{ch:glucose}
+% Target: ~6,000 words. From Paper 2.
+
+\section{Introduction}
+\outline{Almost all federated glucose work is simulated. Methods are rarely compared on one task.}
+
+\section{Data}
+\outline{Four T1D cohorts as federated clients. Three unseen cohorts (ReplaceBG, BrisT1D, Flair) as out-of-distribution tests. Ethics and data access per cohort.}
+
+\section{Methods}
+\outline{One encoder-decoder transformer. By-patient splits, five seeds. Strategies compared: local training, FedAvg, FedProx, MLDG, APFL, Ditto, plus a pooled reference.}
+
+\section{The live federation}
+\outline{Four UK universities (UCL, Manchester, Newcastle, Oxford), each holding only its own data. What the tooling is and why it is light enough for clinics.}
+
+\section{Results}
+\outline{Federation cost almost nothing: within 0.09 mg/dL RMSE of pooled training, far below CGM sensor error. Single-site training is a gamble. One local model matched federation out of distribution, another collapsed, and in-domain accuracy gave no warning. A new site beat training from scratch after finetuning on 9 to 17 patients. Differences between FL strategies fell within seed noise. The dominant effect is federation itself.}
+
+\section{Discussion and limitations}
+\outline{From the paper. Metric choice, seed count, cohort coverage, security of the channel.}

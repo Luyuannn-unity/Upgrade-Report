@@ -1,0 +1,54 @@
+\documentclass[12pt,a4paper]{report}
+
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+\usepackage{setspace}
+\onehalfspacing
+
+% Draft aid: outline notes appear in the PDF while we write.
+% Set \drafttrue -> \draftfalse to hide them for submission.
+\newif\ifdraft
+\drafttrue
+\newcommand{\outline}[1]{\ifdraft\begin{quote}\small\itshape #1\end{quote}\fi}
+
+\title{Federated Learning for Clinical AI:\\
+Evidence and Deployment in Ophthalmic Imaging\\
+and Blood Glucose Forecasting\\[2em]
+\large Upgrade Report}
+\author{Luyuan Qi\\[1em]
+Supervisors: Paul Taylor, Kezhi Li\\ % TODO confirm principal and subsidiary
+Institute of Health Informatics\\
+University College London}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+\outline{To write last. One paragraph per chapter: the problem, the review and what it found, the glucose benchmark and deployment and what they found, the plan.}
+\end{abstract}
+
+\chapter*{Abbreviations}
+\outline{Each entry gets a plain-word explanation, not just an expansion. FL, T1D, CGM, RMSE, OOD, OCT, DR, FedAvg, FedProx, MLDG, DP.}
+
+\tableofcontents
+
+\include{chapters/1-introduction}
+\include{chapters/2-background}
+\include{chapters/3-review}
+\include{chapters/4-glucose}
+\include{chapters/5-future}
+\include{chapters/6-ethics}
+
+\bibliographystyle{unsrtnat}
+\bibliography{references}
+
+\appendix
+\include{chapters/appendix}
+
+\end{document}
