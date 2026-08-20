@@ -1,18 +1,57 @@
 \chapter{Introduction}
 \label{ch:intro}
 % Target: ~2,500 words
+% This chapter carries the shared background, so Chapters 3 and 4 do not repeat their papers' introductions.
 
 \section{Background}
-\outline{Clinical AI models fail on patients and hospitals they were not trained on. The fix is training on varied data from many sites. Privacy law (GDPR, HIPAA) stops hospitals from pooling patient records. Federated learning (FL) resolves this: each site trains on its own data and shares only model updates. Explain FL in plain words in one paragraph, with a figure.}
+\label{sec:background}
 
-\section{Motivation}
-\outline{The open question is not whether FL runs. It is whether FL delivers accuracy close to pooled training, on real separated data, at a cost a clinic can afford. Two applications test this: eye disease imaging (with Moorfields) and blood glucose forecasting in type 1 diabetes. One is images, one is time series. Together they cover the two main data types in clinical FL.}
+Artificial intelligence (AI) is beginning to assist health care. Deep learning, the branch of AI that learns patterns from large sets of examples, can now read some medical images as well as specialists \citep{gulshan2016dr, ting2017dr}. Its impact can be largest where specialists are scarce. Glaucoma shows the scale of that gap. More than half of the people who have it do not know \citep{soh2021undetected}. Even in the United States, about half of cases are undiagnosed \citep{tielsch1991baltimore}. Screening with AI is one route to finding the other half. This thesis is about a barrier that stands in the way of building such tools, and a method that may remove it.
+
+\subsection{Eye disease and the role of AI}
+\label{sec:intro-eye}
+
+Vision impairment affects more than 2.2 billion people worldwide. In at least 1 billion of these cases the cause could have been prevented or has not yet been addressed \citep{who2023blindness}. Diabetic retinopathy is a complication of diabetes that damages the small blood vessels of the retina. It is the leading cause of vision loss in working-age adults \citep{bourne2021trends}. Glaucoma is a disease that slowly damages the optic nerve. It is the leading cause of irreversible blindness \citep{tham2014glaucoma}. Both can be caught early by examining images of the eye. Two kinds of image dominate. A fundus photograph is a picture of the back of the eye taken through the pupil. Optical coherence tomography (OCT) is a scan that captures the layers of the retina in three dimensions. Screening programmes built on these images work, but their reach is limited by a shortage of specialists and equipment \citep{who2024nhwa}.
+
+Deep learning offers a way to scale that screening. Models have reached specialist-level accuracy for grading diabetic retinopathy from fundus photographs \citep{gulshan2016dr, ting2017dr} and for detecting glaucoma from OCT \citep{thompson2022oct}. The field is now moving to foundation models. These are large models pretrained on millions of unlabelled images and then adapted to many tasks. RETFound is one example for retinal images \citep{zhou2023retfound}.
+
+\subsection{Forecasting blood glucose in type 1 diabetes}
+\label{sec:intro-glucose}
+
+Type 1 diabetes (T1D) is a condition in which the body stops making insulin. An estimated 8.4 million people live with it worldwide \citep{gregory2022t1d}. They must dose insulin themselves and balance it against food and activity. The goal is to keep blood glucose inside a narrow target range. Glucose that falls too low is an immediate danger. Glucose that stays too high causes long-term damage to the eyes, kidneys, and nerves.
+
+Care now centres on continuous glucose monitoring (CGM). A CGM is a small sensor worn on the body that reports glucose roughly every five minutes \citep{battelino2019timeinrange}. This dense stream of readings makes short-term forecasting possible. A model that predicts glucose 30 to 60 minutes ahead can warn the patient before a dangerous excursion, inform insulin and meal decisions, and drive automated insulin delivery \citep{vettoretti2020cgm, bekiari2018artificialpancreas}. Automated insulin delivery, also called closed-loop control, is a system in which a pump adjusts insulin on its own using CGM readings and forecasts. All of these uses depend on the forecast being accurate.
+
+\subsection{Data silos and federated learning}
+\label{sec:intro-fl}
+
+A model is only as good as the data that trains it. A model trained at one hospital learns that hospital's patients, devices, and practices, and it can fail elsewhere \citep{yang2024limits}. The fix is to train on varied data drawn from many sites. That data exists, but it sits in silos. Eye images and CGM traces are sensitive personal health records. Privacy laws such as the GDPR in Europe and HIPAA in the United States restrict moving them between institutions \citep{lotan2020privacy, ziller2024privacy}.
+
+Federated learning (FL) resolves this tension \citep{mcmahan2017fedavg}. Each site trains the model on its own data and sends only the resulting model updates to a server. The server combines the updates into one shared model and sends it back. Raw records never leave their institution, yet the model learns from every site. This design is now widely used in medical machine learning \citep{rieke2020future}. This thesis studies FL on the two main kinds of clinical data. Eye images are the imaging case. CGM traces are the time-series case.
+
+% TODO figure: one FL round. Sites train locally, send updates, server aggregates, sends the model back. Reuse the style of Fig. 1 in the review paper.
+
+\subsection{Domain shift}
+\label{sec:intro-shift}
+
+Domain shift means the data a model meets in use differs from the data it was trained on. When that happens, accuracy drops. Both of our applications face it. In eye imaging, cameras and OCT scanners differ by manufacturer, images differ in field of view and quality, and populations differ in demographics and disease prevalence. In glucose forecasting, cohorts differ in sensor generation, demographics, treatment protocol, and how tightly glucose is controlled. Federated learning removes the need to pool data. It does not remove domain shift. A federated model must still work for patients, and even whole hospitals, that it never saw in training.
+
+\subsection{Domain generalisation}
+\label{sec:intro-dg}
+
+Domain generalisation is the problem of making one model hold up on sites it never trained on. There are three broad responses. The first is to train on more varied data, which federation makes possible without moving records. The second is to change the training objective so the model rehearses transfer while it trains. Meta-learning for domain generalisation (MLDG) is one such method. At every update it splits the training sites into a simulated train set and test set, so the model is rewarded for transferring \citep{li2018mldg}. The third is to adapt the model to each site, by finetuning the shared model on a small amount of local data or by keeping a personal model per site. Chapter 2 explains these methods in detail.
 
 \section{Research questions}
-\outline{RQ1: What does the published evidence show about FL in ophthalmic imaging, and where are the gaps? RQ2: For glucose forecasting, how much accuracy does FL give up against pooled training, and how well does it transfer to unseen cohorts? RQ3: Can a federation run across real institutions, and what does a new site need to benefit from it? RQ4 (future): Can the gaps found in RQ1 be closed with a real multi-site ophthalmic federation with measured privacy?}
+\label{sec:intro-rq}
 
-\section{Contributions so far}
-\outline{One paragraph per paper. Paper 1: PRISMA 2020 systematic review of FL in ophthalmic imaging, 90 studies, rule-based risk-of-bias tool. Paper 2: benchmark of six training strategies on four T1D cohorts with three unseen test cohorts, run live across four universities.}
+\outline{RQ1: What does federated training cost against pooling the same data in one place, in the published evidence and in a controlled benchmark? RQ2: How can FL train a model across hospitals with diverse patients so that it generalises to hospitals not seen in training, and what does a new hospital need to do to benefit?}
+
+\section{Progress so far}
+\label{sec:intro-progress}
+
+\outline{One paragraph per paper, mapped to the RQs. Paper 1 (systematic review, 90 studies) answers the evidence half of RQ1 for eyes. Paper 2 (benchmark plus the live four-university federation) answers the benchmark half of RQ1 and most of RQ2 for glucose. Future work (Chapter 5) closes RQ2 for eyes.}
 
 \section{Report organisation}
-\outline{One sentence per chapter.}
+\label{sec:intro-org}
+
+\outline{Placeholder. One sentence per chapter. To be written last.}
