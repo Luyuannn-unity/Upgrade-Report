@@ -27,29 +27,60 @@ Care now centres on continuous glucose monitoring (CGM). A CGM is a small sensor
 
 A model is only as good as the data that trains it. A model trained at one hospital learns that hospital's patients, devices, and practices, and it can fail elsewhere \citep{yang2024limits}. The fix is to train on varied data drawn from many sites. That data exists, but it sits in silos. Eye images and CGM traces are sensitive personal health records. Privacy laws such as the GDPR in Europe and HIPAA in the United States restrict moving them between institutions \citep{lotan2020privacy, ziller2024privacy}.
 
-Federated learning (FL) resolves this tension \citep{mcmahan2017fedavg}. Each site trains the model on its own data and sends only the resulting model updates to a server. The server combines the updates into one shared model and sends it back. Raw records never leave their institution, yet the model learns from every site. This design is now widely used in medical machine learning \citep{rieke2020future}. This thesis studies FL on the two main kinds of clinical data. Eye images are the imaging case. CGM traces are the time-series case.
+Federated learning (FL) resolves this tension \citep{mcmahan2017fedavg}. Each site trains the model on its own data and sends only the resulting model updates to a server. The server combines the updates into one shared model and sends it back. Raw records never leave their institution, yet the model learns from every site. This design is now widely used in medical machine learning \citep{rieke2020future}.
 
 % TODO figure: one FL round. Sites train locally, send updates, server aggregates, sends the model back. Reuse the style of Fig. 1 in the review paper.
 
 \subsection{Domain shift}
 \label{sec:intro-shift}
 
-Domain shift means the data a model meets in use differs from the data it was trained on. When that happens, accuracy drops. Both of our applications face it. In eye imaging, cameras and OCT scanners differ by manufacturer, images differ in field of view and quality, and populations differ in demographics and disease prevalence. In glucose forecasting, cohorts differ in sensor generation, demographics, treatment protocol, and how tightly glucose is controlled. Federated learning removes the need to pool data. It does not remove domain shift. A federated model must still work for patients, and even whole hospitals, that it never saw in training.
+Domain shift means the data distribution a model meets in use differs from the data it was trained on. When that happens, accuracy drops. Both of our applications face it. In eye imaging, cameras and OCT scanners differ by manufacturer, images differ in field of view and quality, and populations differ in demographics and disease prevalence. In glucose forecasting, cohorts differ in sensor generation, demographics, treatment protocol, and how tightly glucose is controlled. Federated learning removes the need to pool data. It does not remove domain shift. Inside a federation, shift causes two problems. The first appears during training. Each site computes updates on its own data. When the sites differ, their updates pull the shared model in different directions, and training can converge slowly or settle on a worse model \citep{li2020fedprox}. The second appears after training. The model must still work for patients, and even whole hospitals, that it never saw.
 
 \subsection{Domain generalisation}
 \label{sec:intro-dg}
 
-Domain generalisation is the problem of making one model hold up on sites it never trained on. There are three broad responses. The first is to train on more varied data, which federation makes possible without moving records. The second is to change the training objective so the model rehearses transfer while it trains. Meta-learning for domain generalisation (MLDG) is one such method. At every update it splits the training sites into a simulated train set and test set, so the model is rewarded for transferring \citep{li2018mldg}. The third is to adapt the model to each site, by finetuning the shared model on a small amount of local data or by keeping a personal model per site. Chapter 2 explains these methods in detail.
+Domain generalisation is the problem of making one model hold up on sites it never trained on. There are three broad responses. The first is to train on more varied data. This is the response federated learning enables, because it reaches data that could not otherwise be brought together. The other two change how the model learns. One changes the training objective so the model rehearses transfer while it trains, as in meta-learning for domain generalisation (MLDG) \citep{li2018mldg}. The other adapts the model to each site, by finetuning the shared model on a small amount of local data or by keeping a personal model per site. Chapter 2 explains these two families in detail.
+
+\section{Motivation}
+\label{sec:intro-motivation}
+
+The case for federated learning is simple. Models get better with more varied training data, and federation reaches data that pooling cannot. Turning that case into practice is the hard part. Three gaps stand in the way.
+
+First, most medical FL studies simulate the federation on a single machine. One computer plays the part of every hospital. A simulation skips what makes real federation hard. There are no separate institutions, no unreliable networks, and no governance to satisfy. Results produced this way are weak evidence for what would happen in practice.
+
+Second, the literature does not show which method works under which conditions. Federated methods are rarely compared head-to-head on the same task. Accuracy on the cohorts that trained the model is rarely separated from accuracy on cohorts it never saw. A group of hospitals that wanted to federate today would find little evidence to guide its choice of method.
+
+Third, participation is taken for granted. A federation exists only if hospitals choose to join, and joining is not free. A site contributes its data, its compute, and its staff time. The literature rarely shows what the site gets back, and rarely tests whether keeping data local protects it as promised.
+
+This thesis works on these three gaps in two applications. Eye disease screening is the imaging case. Blood glucose forecasting in type 1 diabetes is the time-series case. Together they cover the two main kinds of clinical data. The next section turns the gaps into a research question.
 
 \section{Research questions}
 \label{sec:intro-rq}
 
-\outline{RQ1: What does federated training cost against pooling the same data in one place, in the published evidence and in a controlled benchmark? RQ2: How can FL train a model across hospitals with diverse patients so that it generalises to hospitals not seen in training, and what does a new hospital need to do to benefit?}
+This thesis is built around one question.
+
+\begin{quote}
+\itshape How can we use federated learning to train a model across hospitals with diverse patients, so that it generalises to hospitals not seen in training? And what would incentivise hospitals to join the training and adopt the result?
+\end{quote}
+
+The question has three parts. Each maps onto a chapter of this report.
+
+\paragraph{SQ1: what does the published evidence show?} The gaps described above are claims about a literature, and they need checking before they can justify new work. Chapter 3 checks them for ophthalmic imaging with a systematic review. It asks how much of the evidence comes from real federations, which methods were compared and how fairly, and whether the privacy on offer was ever measured.
+
+\paragraph{SQ2: which training strategies generalise, and under which conditions?} Chapter 4 answers this for glucose forecasting with a controlled benchmark. It compares federated and meta-learning strategies on one task, and it reports accuracy separately for cohorts inside the federation and cohorts outside it.
+
+\paragraph{SQ3: why would a hospital join, and what does joining cost?} Chapter 4 gives the first answers. It runs the federation across four real universities and measures what a new site gains from the shared model. Chapter 5 sets out how the incentive question will be taken further.
 
 \section{Progress so far}
 \label{sec:intro-progress}
 
-\outline{One paragraph per paper, mapped to the RQs. Paper 1 (systematic review, 90 studies) answers the evidence half of RQ1 for eyes. Paper 2 (benchmark plus the live four-university federation) answers the benchmark half of RQ1 and most of RQ2 for glucose. Future work (Chapter 5) closes RQ2 for eyes.}
+The work so far is written up in two papers.
+
+The first paper is a systematic review of federated learning in ophthalmic imaging, presented in Chapter 3. It follows PRISMA 2020, a reporting standard for systematic reviews. It searched six databases, included 90 studies, and appraised each with a risk-of-bias instrument built for federated learning. The review answers SQ1, and its answer confirms the gaps above. Only 9 of the 90 studies used real multi-institutional data. Centralised training was at least as accurate as federation in 17 of the 24 head-to-head comparisons available. Privacy was asserted far more often than it was measured.
+
+The second paper is a benchmark and deployment of federated glucose forecasting, presented in Chapter 4. It trains one forecasting model on four type 1 diabetes cohorts as federated clients, and tests it on three cohorts the federation never saw. It answers SQ2 and begins SQ3. Federation matched training on the pooled data to within 0.09 mg/dL of forecast error. Differences between the federated strategies were smaller than the variation between repeated runs. A model trained on one cohort alone could fail badly on unseen cohorts, with no warning from its accuracy at home. A new site beat training from scratch after finetuning the shared model on 9 to 17 of its own patients, which is the start of an answer to why a site would join. The federation ran live across four universities, each holding only its own data.
+
+Chapter 5 plans the work that remains, chiefly a real ophthalmic federation and the incentive question.
 
 \section{Report organisation}
 \label{sec:intro-org}
